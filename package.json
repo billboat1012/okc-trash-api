@@ -1,15 +1,12 @@
 {
-  "name": "okc-trash-schedule",
+  "name": "okc-trash-api",
   "version": "1.0.0",
   "type": "module",
-  "main": "server.mjs",
   "scripts": {
     "start": "node server.mjs"
   },
   "dependencies": {
-    "express": "^5.1.0",
-    "haversine-distance": "^1.2.4",
-    "puppeteer": "^24.22.3",
-    "xml2js": "^0.6.2"
+    "express": "^4.19.2",
+    "puppeteer": "^21.6.0"
   }
 }
