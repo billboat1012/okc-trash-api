@@ -3,8 +3,17 @@ import puppeteer from "puppeteer";
 
 const router = express.Router();
 
+// Simple in-memory cache: { key: { timestamp, data } }
+const cache = {};
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24h
+
 export async function scrapeTrashSchedule(address) {
-  
+  const key = address.trim().toUpperCase();
+
+  if (cache[key] && Date.now() - cache[key].timestamp < CACHE_TTL_MS) {
+    return cache[key].data;
+  }
+
   const browser = await puppeteer.launch({
     headless: "true",
     args: [
@@ -105,12 +114,16 @@ export async function scrapeTrashSchedule(address) {
   if (!match) throw new Error("No Features found in schedule data");
 
   const attrs = match.Attributes || [];
-  return {
+  const result = {
     address: attrs[0] || match.InfoTitle,
     trashDay: attrs[2] || null,
     nextRecycle: [attrs[3], attrs[4], attrs[5]].filter(Boolean),
     nextBulky: [attrs[6], attrs[7], attrs[8]].filter(Boolean),
   };
+
+   cache[key] = { timestamp: Date.now(), data: result };
+
+  return result;
 }
 
 
